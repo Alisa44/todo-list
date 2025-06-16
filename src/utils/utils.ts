@@ -1,44 +1,75 @@
-import {lsKey} from "../constants/constants.ts";
-import type {ITask} from "../types/types.ts";
+import {columnListKey} from "../constants/constants.ts";
+import type {ITask, IBaseColumn} from "../types/types.ts";
 
-export const getParsedTasks = (): ITask[] => {
-    const listFromStorage = localStorage.getItem(lsKey);
+export const getParsedList = (listKey: string): [] => {
+    const listFromStorage = localStorage.getItem(listKey);
     return listFromStorage ? JSON.parse(listFromStorage) : [];
 }
 
-export const addTask = (task: ITask) => {
-    const list = getParsedTasks()
-    list.push(task);
-    localStorage.setItem(lsKey, JSON.stringify(list))
+export const addTask = (newTask: ITask) => {
+    const columns: IBaseColumn[] = getParsedList(columnListKey);
+    const updatedColumns = columns.map(column => {
+        return column.id === newTask.columnId
+            ? {...column, tasks: [...column.tasks, newTask]}
+            : column
+    })
+    localStorage.setItem(columnListKey, JSON.stringify(updatedColumns))
 }
 
-export const removeTask = (id: string) => {
-    let list: ITask[] = getParsedTasks();
-    const taskToRemove = list.find(task => task.id === id);
-    if (taskToRemove) {
-        list = list.filter(task => task.id === taskToRemove.id)
-    }
-    localStorage.setItem(lsKey, JSON.stringify(list))
+export const removeTask = (id: string, columnId: string) => {
+    const columns: IBaseColumn[] = getParsedList(columnListKey);
+    const updatedColumns = columns.map(column => {
+        return column.id === columnId
+            ? {...column, tasks: column.tasks.filter(task => task.id !== id)}
+            : column
+    })
+    localStorage.setItem(columnListKey, JSON.stringify(updatedColumns))
 }
 
-export const changeStatus = (id: string) => {
-    let list: ITask[] = getParsedTasks();
-    const taskToChange = list.find(task => task.id === id);
-    const taskToChangeIndex = list.findIndex(task => task.id === id);
-    if (taskToChange && taskToChangeIndex > -1) {
-        const updatedTask = {...taskToChange, completed: !taskToChange.completed}
-        list = list.splice(taskToChangeIndex, 1, updatedTask)
-    }
-    localStorage.setItem(lsKey, JSON.stringify(list))
+export const changeStatus = (id: string, columnId: string) => {
+    const columns: IBaseColumn[] = getParsedList(columnListKey);
+    const updatedColumns = columns.map(column => {
+        return column.id === columnId
+            ? {
+            ...column,
+                tasks: column.tasks.map(task => task.id === id
+                    ? {...task, completed: !task.completed}
+                    : task)}
+            : column
+    })
+    localStorage.setItem(columnListKey, JSON.stringify(updatedColumns))
 }
 
-export const onEditTitle = (id: string, newTitle: string) => {
-    let list: ITask[] = getParsedTasks();
-    const taskToChange = list.find(task => task.id === id);
-    const taskToChangeIndex = list.findIndex(task => task.id === id);
-    if (taskToChange && taskToChangeIndex > -1) {
-        const updatedTask = {...taskToChange, title: newTitle}
-        list = list.splice(taskToChangeIndex, 1, updatedTask)
-    }
-    localStorage.setItem(lsKey, JSON.stringify(list))
+export const onEditTitle = (id: string, newTitle: string, columnId: string) => {
+    const columns: IBaseColumn[] = getParsedList(columnListKey);
+    const updatedColumns = columns.map(column => {
+        return column.id === columnId
+            ? {
+                ...column,
+                tasks: column.tasks.map(task => task.id === id
+                    ? {...task, title: newTitle}
+                    : task)}
+            : column
+    })
+    localStorage.setItem(columnListKey, JSON.stringify(updatedColumns))
+}
+
+export const addColumn = (column: IBaseColumn) => {
+    const list: IBaseColumn[] = getParsedList(columnListKey)
+    list.push(column);
+    localStorage.setItem(columnListKey, JSON.stringify(list))
+}
+
+export const selectTask = (id: string, columnId: string) => {
+    const columns: IBaseColumn[] = getParsedList(columnListKey);
+    const updatedColumns = columns.map(column => {
+        return column.id === columnId
+            ? {
+                ...column,
+                tasks: column.tasks.map(task => task.id === id
+                    ? {...task, selected: !task.selected}
+                    : task)}
+            : column
+    })
+    localStorage.setItem(columnListKey, JSON.stringify(updatedColumns))
 }

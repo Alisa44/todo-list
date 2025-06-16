@@ -1,0 +1,29 @@
+.board {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+}
+
+@media (min-width: 768px) {
+    .board {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+.add-column-btn {
+    min-width: 280px;
+    height: 60px;
+    font-size: 16px;
+    background-color: #f0f0f0;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.add-column-btn:hover {
+    background-color: #e0e0e0;
+}

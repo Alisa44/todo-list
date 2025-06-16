@@ -1,1 +1,1 @@
-export const lsKey = "todoList"
+export const columnListKey = "columnList"

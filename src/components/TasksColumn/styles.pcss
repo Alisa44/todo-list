@@ -1,0 +1,55 @@
+.task-column {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 12px;
+    min-width: 280px;
+    flex: 0 0 auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.column-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.delete-column {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.column-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.column-actions button {
+    background: #e2e2e2;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.column-actions button:hover {
+    background: #ccc;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

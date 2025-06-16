@@ -1,13 +1,16 @@
-import 'styles.pcss'
+import './styles.pcss';
 import React, {useEffect, useRef, useState} from "react";
 import type {ITask} from "../../types/types.ts";
 import {changeStatus, onEditTitle, removeTask} from "../../utils/utils.ts";
+import Button from "../Button/Button.tsx";
 
-const TaskCard: React.FC<ITask> = ({    id,
+const TaskCard: React.FC<ITask> = ({   id,
                                        title,
                                        completed,
                                        selected,
-                                       onSelect}) => {
+                                       onSelect,
+                                       columnId
+                                   }) => {
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -24,7 +27,7 @@ const TaskCard: React.FC<ITask> = ({    id,
 
     const handleSave = () => {
         if (currentTitle.trim() && currentTitle !== title) {
-            onEditTitle(id, currentTitle.trim());
+            onEditTitle(id, currentTitle.trim(), columnId);
         }
         setIsEditing(false);
     };
@@ -69,11 +72,11 @@ const TaskCard: React.FC<ITask> = ({    id,
             </div>
 
             <div className="task-actions">
-                <button onClick={() => changeStatus(id)} className="status-btn" title="Mark as complete/incomplete">
+                <Button onClick={() => changeStatus(id, columnId)} className="status-btn" title="Mark as complete/incomplete">
                     {completed ? '✅' : '⭕'}
-                </button>
-                <button onClick={onEdit} className="edit-btn" title="Edit">✏️</button>
-                <button onClick={() => removeTask(id)} className="delete-btn" title="Delete">🗑️</button>
+                </Button>
+                <Button onClick={onEdit} className="edit-btn" title="Edit">✏️</Button>
+                <Button onClick={() => removeTask(id, columnId)} className="delete-btn" title="Delete">🗑️</Button>
             </div>
         </div>
     );

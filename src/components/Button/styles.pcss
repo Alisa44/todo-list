@@ -1,0 +1,32 @@
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #3b82f6; /* синій */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.button:hover {
+    background-color: #2563eb;
+    transform: translateY(-1px);
+}
+
+.button:active {
+    background-color: #1d4ed8;
+    transform: translateY(0);
+}
+
+.button:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+}
