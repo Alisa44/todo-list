@@ -4,7 +4,6 @@
     overflow-x: auto;
     gap: 20px;
     padding: 20px;
-    align-items: baseline;
     justify-content: flex-start;
     flex-wrap: wrap;
 }

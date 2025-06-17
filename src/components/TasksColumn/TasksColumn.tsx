@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import type {ITaskColumn} from "../../types/types.ts";
 import TaskCard from "../TaskCard/TaskCard.tsx";
 import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
@@ -8,6 +8,14 @@ import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
 import ColumnMenu from "../ColumnMenu/ColumnMenu.tsx";
 import Button from "../Button/Button.tsx";
 import EditableText from "../EditableText/EditableText.tsx";
+import {dropTargetForElements} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import type {ElementDragPayload, ElementDropTargetGetFeedbackArgs} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
+import type {DragLocationHistory} from "@atlaskit/pragmatic-drag-and-drop/types";
+
+type ElementEventBasePayload = {
+    location: DragLocationHistory;
+    source: ElementDragPayload;
+};
 
 const TaskColumn: React.FC<ITaskColumn> = ({   id,
                                                title,
@@ -19,11 +27,38 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
-    const {
-        columns,
-        updateColumn,
-    } = useBoardContext();
+    const columnRef = useRef<HTMLDivElement|null>(null)
+    const {columns, updateColumn} = useBoardContext();
     const currentColumn = useMemo(() => columns.find(column => column.id === id), [columns])
+
+    const moveTask = useCallback((taskId: string, fromColumnId: string, columnId: string) => {
+        const prevColumn = columns.find(column => column.id === fromColumnId)
+        const targetColumn = columns.find(column => column.id === columnId)
+        if (prevColumn && targetColumn) {
+            const draggedTask = prevColumn.tasks.find(task => task.id === taskId);
+            if (draggedTask && columnId) {
+                const updatedTask = {...draggedTask, columnId}
+                const filteredTasks = targetColumn.tasks.filter(task => task.id !== taskId)
+                updateColumn({...prevColumn, tasks: prevColumn.tasks.filter(task => task.id !== taskId)})
+                updateColumn({...targetColumn, tasks: [...filteredTasks, updatedTask]})
+            }
+        }
+    }, [columns])
+
+    useEffect(() => {
+        if (columnRef?.current) {
+            return dropTargetForElements({
+                element: columnRef.current,
+                canDrop: (props: ElementDropTargetGetFeedbackArgs) => props.source.data?.type === 'task',
+                onDrop: (props: ElementEventBasePayload) => {
+                    const { taskId, fromColumnId } = props.source.data;
+                    if (typeof taskId !== 'string' || typeof fromColumnId !== 'string') {
+                        return;
+                    }
+                    moveTask(taskId, fromColumnId, id);}
+            });
+        }
+    }, [columnRef, moveTask]);
 
     useEffect(() => {
         setCurrentTitle(title)
@@ -40,13 +75,6 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
         if (currentColumn) {
             const updated = {...currentColumn, tasks: [...currentColumn.tasks, newTask]}
             updateColumn(updated)
-        }
-    }
-
-    const onSelect = (taskId: string) => {
-        if (currentColumn) {
-            updateColumn({...currentColumn,
-            tasks: currentColumn.tasks.map(task => task.id === taskId ? {...task, selected: !task.selected} : task)})
         }
     }
 
@@ -81,7 +109,7 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
     }
 
     return (
-        <div className={styles.taskColumn}>
+        <div className={styles.taskColumn} ref={columnRef}>
             <div className={styles.columnHeader}>
                 <div className="drag-handle" style={{display: 'none'}}>{children}</div>
                 <EditableText
@@ -115,22 +143,14 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
                 />
             </div>
 
-            <div className={styles.taskList}>
-                {tasks.map((task) => (
-                    <TaskCard
-                        columnId={task.columnId}
-                        key={task.id}
-                        id={task.id}
-                        title={task.title}
-                        completed={task.completed}
-                        selected={task.selected}
-                        onSelect={() => onSelect(task.id)}
-                    />
-                ))}
-            </div>
-
             <div className={styles.columnActions}>
                 <Button onClick={() => setShowModal(true)}>➕ Create</Button>
+            </div>
+
+            <div className={styles.taskList}>
+                {tasks.map((task) => (
+                    <TaskCard task={task} currentColumn={currentColumn} key={task.id}/>
+                ))}
             </div>
 
             {showModal && (

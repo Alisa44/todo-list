@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import type {ITask} from "../../types/types.ts";
+import React, {useEffect, useRef, useState} from "react";
+import type {IBaseColumn, ITask} from "../../types/types.ts";
 import Button from "../Button/Button.tsx";
 import StatusToggle from "../StatusToggle/StatusToggle.tsx";
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
@@ -7,21 +7,30 @@ import EditableText from "../EditableText/EditableText.tsx";
 import {EditIcon} from "../EditIcon/EditIcon.tsx";
 import {DeleteIcon} from "../DeleteIcon/DeleteIcon.tsx";
 import styles from './TaskCard.module.css'
+import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
-const TaskCard: React.FC<ITask> = ({   id,
-                                       title,
-                                       completed,
-                                       selected,
-                                       onSelect,
-                                       columnId
-                                   }) => {
+const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn }> = ({task, currentColumn}) => {
     const {updateColumn, columns} = useBoardContext();
+    const {   id,
+        title,
+        completed,
+        selected,
+        columnId
+    } = task
+
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
+    const ref = useRef<HTMLDivElement|null>(null);
 
     useEffect(() => {
         setCurrentTitle(title)
-    }, [title])
+        if (ref.current) {
+            return draggable({
+                element: ref.current,
+                getInitialData: () => ({ type: 'task', taskId: task.id, fromColumnId: columnId }),
+            });
+        }
+    }, [title, ref])
 
     const onEdit = () => setIsEditing(prevState => !prevState);
 
@@ -65,10 +74,17 @@ const TaskCard: React.FC<ITask> = ({   id,
         setIsEditing(false);
     };
 
-    const onSelectTask = () => onSelect && onSelect(id)
+    const onSelectTask = () => {
+        if (currentColumn) {
+            updateColumn({...currentColumn,
+                tasks: currentColumn.tasks.map(task => task.id === id ? ({...task, selected: !task.selected}) : task)})
+        }
+    }
 
     return (
-        <div className={`${styles.taskCard} ${completed ? styles.completed : ''}  ${selected ? styles.selected : ''}`}>
+        <div
+            ref={ref}
+            className={`${styles.taskCard} ${completed ? styles.completed : ''}  ${selected ? styles.selected : ''}`}>
             <div className={styles.taskContent}>
                 <input
                     title={selected ? "Deselect" : "Select"}
