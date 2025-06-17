@@ -41,3 +41,7 @@
 .menuItem:hover {
     background-color: #f3f4f6;
 }
+
+.disabled {
+    opacity: 0.5;
+}

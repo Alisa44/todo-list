@@ -4,6 +4,7 @@ import styles from './ColumnMenu.module.css';
 type MenuItem = {
     label: string;
     onClick: () => void;
+    disabled?: boolean;
 };
 
 type MenuButtonProps = {
@@ -24,6 +25,11 @@ const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const onItemClick = (item: MenuItem) => {
+        !item.disabled && item.onClick();
+        setOpen(false);
+    }
+
     return (
         <div className={styles.menuContainer} ref={ref}>
             <button
@@ -36,7 +42,10 @@ const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
             {open && (
                 <ul className={styles.menuList}>
                     {items.map((item, i) => (
-                        <div className={styles.menuItem} key={i} onClick={() => { item.onClick(); setOpen(false); }}>
+                        <div
+                            className={`${styles.menuItem} ${item.disabled ? styles.disabled : ''}`}
+                            key={i}
+                            onClick={() => onItemClick(item)}>
                             {item.label}
                         </div>
                     ))}

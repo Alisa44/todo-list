@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import type {ITaskColumn} from "../../types/types.ts";
 import TaskCard from "../TaskCard/TaskCard.tsx";
 import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
@@ -19,7 +19,11 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
-    const { columns, updateColumn } = useBoardContext();
+    const {
+        columns,
+        updateColumn,
+    } = useBoardContext();
+    const currentColumn = useMemo(() => columns.find(column => column.id === id), [columns])
 
     useEffect(() => {
         setCurrentTitle(title)
@@ -33,7 +37,6 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
             completed: false,
             selected: false
         }
-        const currentColumn = columns.find(column => column.id === id)
         if (currentColumn) {
             const updated = {...currentColumn, tasks: [...currentColumn.tasks, newTask]}
             updateColumn(updated)
@@ -41,20 +44,39 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
     }
 
     const onSelect = (taskId: string) => {
-        const columnToUpdate = columns.find(column => column.id === id)
-        if (columnToUpdate) {
-            updateColumn({...columnToUpdate,
-            tasks: columnToUpdate.tasks.map(task => task.id === taskId ? {...task, selected: !task.selected} : task)})
+        if (currentColumn) {
+            updateColumn({...currentColumn,
+            tasks: currentColumn.tasks.map(task => task.id === taskId ? {...task, selected: !task.selected} : task)})
         }
     }
 
     const handleSave = (newTitle: string) => {
-        const columnToUpdate = columns.find(column => column.id === id);
-        if (columnToUpdate) {
+        if (currentColumn) {
             updateColumn({
-                ...columnToUpdate,
+                ...currentColumn,
                 title: newTitle.trim()
             })
+        }
+    }
+
+    const onDeleteSelectedTasks = () => {
+        if (currentColumn) {
+            updateColumn({...currentColumn,
+                tasks: currentColumn.tasks.filter(task => !task.selected)})
+        }
+    }
+
+    const onMarkSelectedAsComplete = () => {
+        if (currentColumn) {
+            updateColumn({...currentColumn,
+                tasks: currentColumn.tasks.map(task => task.selected ? ({...task, completed: true}) : task)})
+        }
+    }
+
+    const onMarkSelectedAsIncomplete = () => {
+        if (currentColumn) {
+            updateColumn({...currentColumn,
+                tasks: currentColumn.tasks.map(task => task.selected ? ({...task, completed: false}) : task)})
         }
     }
 
@@ -73,7 +95,22 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
                     items={[
                         { label: 'Edit Title', onClick: () => setIsEditing(true) },
                         { label: 'Delete Column', onClick: onDeleteColumn },
-                        { label: 'Select All', onClick: onSelectAll}
+                        { label: 'Select All', onClick: onSelectAll},
+                        {
+                            label: 'Delete Selected',
+                            onClick: onDeleteSelectedTasks,
+                            disabled: !currentColumn?.tasks.find(task => task.selected)
+                        },
+                        {
+                            label: 'Mark Selected As Complete',
+                            onClick: onMarkSelectedAsComplete,
+                            disabled: !currentColumn?.tasks.find(task => task.selected)
+                        },
+                        {
+                            label: 'Mark Selected As Incomplete',
+                            onClick: onMarkSelectedAsIncomplete,
+                            disabled: !currentColumn?.tasks.find(task => task.selected)
+                        },
                     ]}
                 />
             </div>
