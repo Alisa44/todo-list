@@ -4,11 +4,12 @@
     justify-content: center;
     gap: 6px;
     padding: 10px 16px;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 500;
-    color: #fff;
-    background-color: #3b82f6; /* синій */
+    color: lightslategray;
+    background-color: lightblue;
     border: none;
+    outline: none;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.25s ease, transform 0.2s ease;
@@ -16,12 +17,16 @@
 }
 
 .button:hover {
-    background-color: #2563eb;
+    background-color: deepskyblue;
     transform: translateY(-1px);
 }
 
+.button:focus {
+    outline: none;
+}
+
 .button:active {
-    background-color: #1d4ed8;
+    background-color: deepskyblue;
     transform: translateY(0);
 }
 

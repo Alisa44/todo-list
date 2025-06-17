@@ -1,0 +1,30 @@
+.status-toggle {
+    width: 28px;
+    height: 28px;
+    text-align: center;
+    vertical-align: center;
+    border-radius: 50%;
+    border: none;
+    background-color: #d1d5db;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    outline: none;
+    padding: 0;
+}
+
+.status-toggle.active {
+    background-color: #10b981
+}
+
+.status-toggle.inactive {
+    background-color: transparent;
+    border: 2px solid lightslategray;
+}
+
+.status-toggle:hover {
+    transform: scale(1.1);
+}
+
+.status-toggle:active {
+    transform: scale(0.95);
+}

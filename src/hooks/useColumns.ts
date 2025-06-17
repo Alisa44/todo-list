@@ -17,7 +17,7 @@ export const useColumns = () => {
     }, []);
 
     useEffect(() => {
-        localStorage.setItem(columnListKey, JSON.stringify(columns));
+        if (columns.length) localStorage.setItem(columnListKey, JSON.stringify(columns));
     }, [columns]);
 
     const addColumn = useCallback((title: string) => {

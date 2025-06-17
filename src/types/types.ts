@@ -9,7 +9,7 @@ export interface IBaseTask {
 }
 
 export interface ITask extends IBaseTask {
-    onSelect?: () => (id: string) => void;
+    onSelect?: (id: string) => void;
 }
 
 export interface IBaseColumn {

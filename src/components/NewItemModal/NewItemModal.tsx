@@ -37,8 +37,8 @@ const NewItemModal: React.FC<NewTaskModalProps> = ({ onClose, onSubmit, modalTit
                     placeholder={placeholder}
                 />
                 <div className="modal-actions">
-                    <Button onClick={handleSubmit}>Add</Button>
                     <Button className="cancel" onClick={onClose}>Cancel</Button>
+                    <Button onClick={handleSubmit}>Add</Button>
                 </div>
             </div>
         </div>

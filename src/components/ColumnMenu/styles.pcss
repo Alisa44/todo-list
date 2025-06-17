@@ -1,0 +1,43 @@
+.menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-trigger {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 6px;
+    color: #444;
+    transition: background 0.2s ease;
+}
+
+.menu-trigger:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.menu-list {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 6px 0;
+    z-index: 10;
+    min-width: 140px;
+}
+
+.menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.menu-item:hover {
+    background-color: #f3f4f6;
+}

@@ -6,14 +6,16 @@ import {selectTask} from "../../utils/utils.ts";
 import { v4 as uuidv4 } from 'uuid';
 import './styles.pcss';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
+import ColumnMenu from "../ColumnMenu/ColumnMenu.tsx";
+import Button from "../Button/Button.tsx";
 
-const TaskColumn: React.FC<ITaskColumn> = ({        id,
-                                                   title,
-                                                   tasks,
-                                                   onDeleteColumn,
-                                                   onSelectAll,
-                                                   children,
-                                               }) => {
+const TaskColumn: React.FC<ITaskColumn> = ({   id,
+                                               title,
+                                               tasks,
+                                               onDeleteColumn,
+                                               onSelectAll,
+                                               children,
+                                           }) => {
     const [showModal, setShowModal] = useState(false);
 
     const { columns, updateColumn } = useBoardContext();
@@ -34,20 +36,30 @@ const TaskColumn: React.FC<ITaskColumn> = ({        id,
     }
 
     const onSelect = (taskId: string) => {
+        const columnToUpdate = columns.find(column => column.id === id)
+        if (columnToUpdate) {
+            updateColumn({...columnToUpdate,
+            tasks: columnToUpdate.tasks.map(task => task.id === taskId ? {...task, selected: !task.selected} : task)})
+        }
         selectTask(taskId, id)
+    }
+
+    const onEditTitle = () => {
+
     }
 
     return (
         <div className="task-column">
             <div className="column-header">
-                <div className="drag-handle">{children}</div>
-                <h3>{title}</h3>
-                <button className="delete-column" onClick={onDeleteColumn}>🗑️</button>
-            </div>
-
-            <div className="column-actions">
-                <button onClick={() => setShowModal(true)}>➕ Add Task</button>
-                <button onClick={onSelectAll}>☑️ Select All</button>
+                <div className="drag-handle" style={{display: 'none'}}>{children}</div>
+                <h3 className="column-title">{title}</h3>
+                <ColumnMenu
+                    items={[
+                        { label: 'Edit Title', onClick: onEditTitle },
+                        { label: 'Delete Column', onClick: onDeleteColumn },
+                        { label: 'Select All', onClick: onSelectAll}
+                    ]}
+                />
             </div>
 
             <div className="task-list">
@@ -59,10 +71,15 @@ const TaskColumn: React.FC<ITaskColumn> = ({        id,
                         title={task.title}
                         completed={task.completed}
                         selected={task.selected}
-                        onSelect={ () => () => onSelect(task.id)}
+                        onSelect={() => onSelect(task.id)}
                     />
                 ))}
             </div>
+
+            <div className="column-actions">
+                <Button onClick={() => setShowModal(true)}>➕ Create</Button>
+            </div>
+
             {showModal && (
                 <AddTaskModal
                     modalTitle="Add New Task"

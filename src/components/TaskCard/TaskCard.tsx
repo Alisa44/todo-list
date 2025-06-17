@@ -1,8 +1,13 @@
 import './styles.pcss';
 import React, {useEffect, useRef, useState} from "react";
 import type {ITask} from "../../types/types.ts";
-import {changeStatus, onEditTitle, removeTask} from "../../utils/utils.ts";
+import {onEditTitle} from "../../utils/utils.ts";
 import Button from "../Button/Button.tsx";
+import StatusToggle from "../StatusToggle/StatusToggle.tsx";
+import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
+import EditableText from "../EditableText/EditableText.tsx";
+import {EditIcon} from "../EditIcon/EditIcon.tsx";
+import {DeleteIcon} from "../DeleteIcon/DeleteIcon.tsx";
 
 const TaskCard: React.FC<ITask> = ({   id,
                                        title,
@@ -11,6 +16,7 @@ const TaskCard: React.FC<ITask> = ({   id,
                                        onSelect,
                                        columnId
                                    }) => {
+    const {updateColumn, columns} = useBoardContext();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
@@ -39,44 +45,60 @@ const TaskCard: React.FC<ITask> = ({   id,
 
     const onEdit = () => setIsEditing(prevState => !prevState);
 
+    const onStatusChange = () => {
+        const columnToUpdate = columns.find(column => column.id === columnId);
+        if (columnToUpdate) {
+            updateColumn({
+                ...columnToUpdate,
+                tasks: columnToUpdate.tasks.map(task => task.id === id
+                    ? {...task, completed: !task.completed}
+                    : task)})
+        }
+    }
+
+    const onDeleteTask = () => {
+        const columnToUpdate = columns.find(column => column.id === columnId);
+        if (columnToUpdate) {
+            updateColumn({
+                ...columnToUpdate,
+                tasks: columnToUpdate.tasks.filter(task => task.id !== id)
+            })
+        }
+    }
+
+    const onSelectTask = () => onSelect && onSelect(id)
+
     return (
-        <div className={`task-card ${completed ? 'completed' : ''}`}>
+        <div className={`task-card ${completed ? 'completed' : ''}  ${selected ? 'selected' : ''}`}>
             <div className="task-content">
                 <input
+                    title={selected ? "Deselect" : "Select"}
                     type="checkbox"
                     checked={selected}
-                    onChange={onSelect}
+                    onChange={onSelectTask}
                     className="checkbox"
                 />
-                {isEditing ? (
-                    <input
-                        ref={inputRef}
-                        className="task-input"
-                        value={currentTitle}
-                        onChange={(e) => setCurrentTitle(e.target.value)}
-                        onBlur={handleSave}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleSave();
-                            if (e.key === 'Escape') handleCancel();
-                        }}
-                    />
-                ) : (
-                    <span
-                        className="task-title"
-                        onDoubleClick={() => setIsEditing(true)}
-                    >
-            {title}
-          </span>
-                )}
-                <span className="task-title">{currentTitle}</span>
+                <EditableText
+                    isEditing={isEditing}
+                    setIsEditing={setIsEditing}
+                    value={currentTitle}
+                    onChange={setCurrentTitle}
+                    inputClassName="task-input"
+                    className="task-title"
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSave();
+                        if (e.key === 'Escape') handleCancel();
+                    }}/>
             </div>
 
             <div className="task-actions">
-                <Button onClick={() => changeStatus(id, columnId)} className="status-btn" title="Mark as complete/incomplete">
-                    {completed ? '✅' : '⭕'}
-                </Button>
-                <Button onClick={onEdit} className="edit-btn" title="Edit">✏️</Button>
-                <Button onClick={() => removeTask(id, columnId)} className="delete-btn" title="Delete">🗑️</Button>
+                <StatusToggle completed={completed} onToggle={onStatusChange}/>
+                <div>
+                    <Button onClick={onEdit} className="edit-btn" title="Edit"><EditIcon size={20}/></Button>
+                    <Button onClick={onDeleteTask} className="delete-btn" title="Delete">
+                        <DeleteIcon color="#10b981" size={20}/>️
+                    </Button>
+                </div>
             </div>
         </div>
     );
