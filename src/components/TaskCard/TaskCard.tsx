@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import type {IBaseColumn, ITask} from "../../types/types.ts";
 import Button from "../Button/Button.tsx";
 import StatusToggle from "../StatusToggle/StatusToggle.tsx";
@@ -9,7 +9,7 @@ import {DeleteIcon} from "../DeleteIcon/DeleteIcon.tsx";
 import styles from './TaskCard.module.css'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
-const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn }> = ({task, currentColumn}) => {
+const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn, isDragging: boolean }> = ({task, currentColumn, isDragging}) => {
     const {updateColumn, columns} = useBoardContext();
     const {   id,
         title,
@@ -21,16 +21,31 @@ const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn }> = ({task,
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
     const ref = useRef<HTMLDivElement|null>(null);
+    const selectedTaskIds = useMemo(() => {
+        return currentColumn?.tasks.filter(task => task.selected)?.map(task => task.id)
+    }, [currentColumn])
 
     useEffect(() => {
         setCurrentTitle(title)
         if (ref.current) {
-            return draggable({
+            draggable({
                 element: ref.current,
-                getInitialData: () => ({ type: 'task', taskId: task.id, fromColumnId: columnId }),
+                canDrag: () => selected,
+                getInitialData: () => {
+                    const isSelected = selectedTaskIds?.includes(task.id);
+                    const tasksToMove = isSelected
+                        ? selectedTaskIds
+                        : [task.id];
+
+                    return {
+                        type: 'task-group',
+                        taskIds: tasksToMove,
+                        fromColumnId: columnId,
+                    };
+                },
             });
         }
-    }, [title, ref])
+    }, [title, ref, selected, selectedTaskIds])
 
     const onEdit = () => setIsEditing(prevState => !prevState);
 
@@ -84,7 +99,7 @@ const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn }> = ({task,
     return (
         <div
             ref={ref}
-            className={`${styles.taskCard} ${completed ? styles.completed : ''}  ${selected ? styles.selected : ''}`}>
+            className={`${styles.taskCard} ${completed ? styles.completed : ''}  ${selected ? styles.selected : ''} ${isDragging ? styles.dragging : ''}`}>
             <div className={styles.taskContent}>
                 <input
                     title={selected ? "Deselect" : "Select"}

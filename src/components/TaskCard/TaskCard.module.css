@@ -35,6 +35,12 @@
     color: #4b5563;
 }
 
+.dragging {
+    opacity: 0.85;
+    transform: scale(1.02);
+    box-shadow: 0 8px 12px rgba(0,0,0,0.1);
+}
+
 .checkbox {
     width: 18px;
     height: 18px;

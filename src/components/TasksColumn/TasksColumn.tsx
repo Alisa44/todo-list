@@ -27,20 +27,25 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
+    const [isDragging, setDragging] = useState<boolean>(false);
     const columnRef = useRef<HTMLDivElement|null>(null)
     const {columns, updateColumn} = useBoardContext();
     const currentColumn = useMemo(() => columns.find(column => column.id === id), [columns])
 
-    const moveTask = useCallback((taskId: string, fromColumnId: string, columnId: string) => {
+    const moveTasks = useCallback((taskIds: string[], fromColumnId: string, columnId: string) => {
         const prevColumn = columns.find(column => column.id === fromColumnId)
         const targetColumn = columns.find(column => column.id === columnId)
         if (prevColumn && targetColumn) {
-            const draggedTask = prevColumn.tasks.find(task => task.id === taskId);
-            if (draggedTask && columnId) {
-                const updatedTask = {...draggedTask, columnId}
-                const filteredTasks = targetColumn.tasks.filter(task => task.id !== taskId)
-                updateColumn({...prevColumn, tasks: prevColumn.tasks.filter(task => task.id !== taskId)})
-                updateColumn({...targetColumn, tasks: [...filteredTasks, updatedTask]})
+            const draggedTasks = prevColumn.tasks.filter(task => taskIds.includes(task.id));
+            if (draggedTasks.length && columnId) {
+                const updatedTasks = draggedTasks.map(task => ({...task, columnId}))
+                const filteredTasks = prevColumn.tasks.filter(task => !taskIds.includes(task.id))
+                if (targetColumn.id !== prevColumn.id) {
+                    updateColumn({...targetColumn, tasks: [...targetColumn.tasks, ...updatedTasks]})
+                    updateColumn({...prevColumn, tasks: filteredTasks})
+                } else {
+                    updateColumn({...prevColumn, tasks: [...filteredTasks, ...draggedTasks]})
+                }
             }
         }
     }, [columns])
@@ -49,16 +54,19 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
         if (columnRef?.current) {
             return dropTargetForElements({
                 element: columnRef.current,
-                canDrop: (props: ElementDropTargetGetFeedbackArgs) => props.source.data?.type === 'task',
+                onDragStart: () => setDragging(true),
+                onDragLeave: () => setDragging(false),
+                canDrop: (props: ElementDropTargetGetFeedbackArgs) => props.source.data?.type === 'task-group',
                 onDrop: (props: ElementEventBasePayload) => {
-                    const { taskId, fromColumnId } = props.source.data;
-                    if (typeof taskId !== 'string' || typeof fromColumnId !== 'string') {
+                    const { fromColumnId } = props.source.data;
+                    const taskIds: string[] = props.source.data.taskIds;
+                    if (typeof fromColumnId !== 'string') {
                         return;
                     }
-                    moveTask(taskId, fromColumnId, id);}
+                    moveTasks(taskIds, fromColumnId, id);}
             });
         }
-    }, [columnRef, moveTask]);
+    }, [columnRef, moveTasks]);
 
     useEffect(() => {
         setCurrentTitle(title)
@@ -149,7 +157,7 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
 
             <div className={styles.taskList}>
                 {tasks.map((task) => (
-                    <TaskCard task={task} currentColumn={currentColumn} key={task.id}/>
+                    <TaskCard task={task} currentColumn={currentColumn} key={task.id} isDragging={isDragging}/>
                 ))}
             </div>
 
