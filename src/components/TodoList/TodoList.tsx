@@ -1,19 +1,23 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import TaskColumn from "../TasksColumn/TasksColumn.tsx";
-import './styles.pcss';
-import Button from "../Button/Button.tsx";
-import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
+import styles from './TodoList.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
+import BoardHeader from "../BoardHeader/BoardHeader.tsx";
+import type {IBaseColumn} from "../../types/types.ts";
 
 const TodoList: React.FC = () => {
     const {
         columns,
         deleteColumn,
         updateColumn,
-        addColumn
     } = useBoardContext();
 
-    const [showModal, setShowModal] = useState<boolean>(false)
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [currentColumns, setCurrentColumns] = useState<IBaseColumn[]>([]);
+
+    useEffect(() => {
+        setCurrentColumns(columns)
+    }, [columns])
 
     const selectAllTasksInColumn = (columnId: string) => {
         const columnToUpdate = columns.find(column => column.id === columnId)
@@ -26,28 +30,32 @@ const TodoList: React.FC = () => {
         }
     };
 
+    const onSearchChange = (value: string) => {
+        setSearchTerm(value)
+        setCurrentColumns(
+            columns.map(column => ({
+                ...column,
+                tasks: column.tasks.filter(task => task.title.includes(value))
+            }))
+        )
+    }
+
     return (
-        <div className="board">
-            {columns.map((column) => (
-                <TaskColumn
-                    key={column.id}
-                    id={column.id}
-                    title={column.title}
-                    tasks={column.tasks}
-                    onDeleteColumn={() => deleteColumn(column.id)}
-                    onSelectAll={() => selectAllTasksInColumn(column.id)}
-                >
-                </TaskColumn>
-            ))}
-            <Button className="add-column-btn" onClick={() => setShowModal(true)}>➕ Add Column</Button>
-            {showModal && (
-                <AddTaskModal
-                    modalTitle="Add New Column"
-                    placeholder="Column Title"
-                    onClose={() => setShowModal(false)}
-                    onSubmit={addColumn}
-                />
-            )}
+        <div>
+            <BoardHeader onSearchChange={onSearchChange} searchTerm={searchTerm}/>
+            <div className={styles.board}>
+                {currentColumns.map((column) => (
+                    <TaskColumn
+                        key={column.id}
+                        id={column.id}
+                        title={column.title}
+                        tasks={column.tasks}
+                        onDeleteColumn={() => deleteColumn(column.id)}
+                        onSelectAll={() => selectAllTasksInColumn(column.id)}
+                    >
+                    </TaskColumn>
+                ))}
+            </div>
         </div>
     );
 };

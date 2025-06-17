@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './styles.pcss';
+import styles from'./NewItemModal.module.css';
 import Button from "../Button/Button.tsx";
 
 type NewTaskModalProps = {
@@ -26,8 +26,8 @@ const NewItemModal: React.FC<NewTaskModalProps> = ({ onClose, onSubmit, modalTit
     };
 
     return (
-        <div className="modal-backdrop" onClick={onClose}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className={styles.modalBackdrop} onClick={onClose}>
+            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 <h3>{modalTitle}</h3>
                 <input
                     ref={inputRef}
@@ -36,8 +36,8 @@ const NewItemModal: React.FC<NewTaskModalProps> = ({ onClose, onSubmit, modalTit
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder={placeholder}
                 />
-                <div className="modal-actions">
-                    <Button className="cancel" onClick={onClose}>Cancel</Button>
+                <div className={styles.modalActions}>
+                    <Button className={styles.cancel} onClick={onClose}>Cancel</Button>
                     <Button onClick={handleSubmit}>Add</Button>
                 </div>
             </div>

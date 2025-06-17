@@ -1,42 +1,38 @@
-.task-card {
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    padding: 12px;
-    margin-bottom: 8px;
-    transition: box-shadow 0.15s ease, transform 0.1s ease;
+.taskCard {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.1s ease;
 }
 
-.task-content {
+.taskContent {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.task-card:hover {
+.taskCard:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     transform: translateY(-2px);
 }
 
-.task-card.selected {
+.taskCard.selected {
     transform: translateX(8px);
     background-color: #e0f2fe;
 }
 
-.task-title {
+.taskTitle {
     font-size: 18px;
     font-weight: 600;
     color: #333;
 }
 
-.task-card.completed {
-    background-color: #f0f0f0;
+.taskCard.completed {
+    background: #e2fbe2;
     text-decoration: line-through;
-    opacity: 0.6;
+    color: #4b5563;
 }
 
 .checkbox {
@@ -45,22 +41,21 @@
     cursor: pointer;
 }
 
-.task-actions {
+.taskActions {
     display: flex;
     gap: 6px;
-    opacity: 0;
     transform: translateY(-4px);
     transition: opacity 0.2s ease, transform 0.2s ease;
     align-items: center;
     justify-content: flex-end;
 }
 
-.task-actions button {
+.taskActions button {
     padding: 0 4px;
 }
 
-.edit-btn,
-.delete-btn {
+.editBtn,
+.deleteBtn {
     background: none;
     border: none;
     font-size: 16px;
@@ -68,13 +63,13 @@
     transition: transform 0.2s;
 }
 
-.edit-btn:hover,
-.delete-btn:hover {
+.editBtn:hover,
+.deleteBtn:hover {
     transform: scale(1.1);
 }
 
-.task-input {
-    max-width: 80%;
+.taskInput {
+    max-width: 70%;
     font-size: 16px;
     padding: 4px 8px;
     border: 1px solid #ccc;
@@ -82,11 +77,11 @@
     flex: 1;
 }
 
-.task-input:focus {
+.taskInput:focus {
     outline: none;
 }
 
-.task-card:hover .task-actions {
+.taskCard:hover .taskActions {
     opacity: 1;
     transform: translateY(0);
 }

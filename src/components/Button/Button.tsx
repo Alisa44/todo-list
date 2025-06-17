@@ -1,6 +1,6 @@
 import React from 'react'
 import type {ButtonHTMLAttributes, ReactNode} from "react";
-import './styles.pcss';
+import styles from './Button.module.css';
 
 export type ButtonProps = {
     onClick: () => void;
@@ -10,7 +10,7 @@ export type ButtonProps = {
 
 const Button: React.FC<ButtonProps> = ({onClick, children, className = '', ...props}) => {
     return (
-        <button className={className ? className : "button"} onClick={onClick} {...props}>
+        <button className={className ? className : styles.button} onClick={onClick} {...props}>
             {children}
         </button>
     );

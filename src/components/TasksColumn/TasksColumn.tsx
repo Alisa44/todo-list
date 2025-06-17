@@ -3,7 +3,7 @@ import type {ITaskColumn} from "../../types/types.ts";
 import TaskCard from "../TaskCard/TaskCard.tsx";
 import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
 import { v4 as uuidv4 } from 'uuid';
-import './styles.pcss';
+import styles from './TaskColumn.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
 import ColumnMenu from "../ColumnMenu/ColumnMenu.tsx";
 import Button from "../Button/Button.tsx";
@@ -48,36 +48,27 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
         }
     }
 
-    const handleSave = () => {
+    const handleSave = (newTitle: string) => {
         const columnToUpdate = columns.find(column => column.id === id);
         if (columnToUpdate) {
             updateColumn({
                 ...columnToUpdate,
-                title: currentTitle.trim()
+                title: newTitle.trim()
             })
         }
     }
 
-    const handleCancel = () => {
-        setCurrentTitle(title);
-        setIsEditing(false);
-    };
-
     return (
-        <div className="task-column">
-            <div className="column-header">
+        <div className={styles.taskColumn}>
+            <div className={styles.columnHeader}>
                 <div className="drag-handle" style={{display: 'none'}}>{children}</div>
                 <EditableText
                     isEditing={isEditing}
                     setIsEditing={setIsEditing}
                     value={currentTitle}
-                    onChange={setCurrentTitle}
-                    inputClassName="column-input"
-                    className="column-title"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSave();
-                        if (e.key === 'Escape') handleCancel();
-                    }}/>
+                    onChange={handleSave}
+                    inputClassName={styles.columnInput}
+                    className={styles.columnTitle}/>
                 <ColumnMenu
                     items={[
                         { label: 'Edit Title', onClick: () => setIsEditing(true) },
@@ -87,7 +78,7 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
                 />
             </div>
 
-            <div className="task-list">
+            <div className={styles.taskList}>
                 {tasks.map((task) => (
                     <TaskCard
                         columnId={task.columnId}
@@ -101,7 +92,7 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
                 ))}
             </div>
 
-            <div className="column-actions">
+            <div className={styles.columnActions}>
                 <Button onClick={() => setShowModal(true)}>➕ Create</Button>
             </div>
 

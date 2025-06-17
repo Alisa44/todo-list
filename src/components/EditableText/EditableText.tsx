@@ -4,6 +4,7 @@ import React, {
     useEffect
 } from 'react';
 import type {KeyboardEvent, InputHTMLAttributes, Dispatch, SetStateAction} from 'react'
+import styles from './EditableText.module.css';
 
 type EditableTextProps = {
     value: string;
@@ -47,7 +48,7 @@ const EditableText: React.FC<EditableTextProps> = ({
         setIsEditing(false);
     };
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') handleSave();
         if (e.key === 'Escape') handleCancel();
         rest.onKeyDown?.(e);
@@ -60,17 +61,17 @@ const EditableText: React.FC<EditableTextProps> = ({
             value={currentText}
             onChange={(e) => setCurrentText(e.target.value)}
             onBlur={handleSave}
-            onKeyDown={handleKeyDown}
-            className={`editable-input ${inputClassName}`}
+            onKeyUp={handleKeyUp}
+            className={`${styles.editableInput} ${inputClassName}`}
             {...rest}
         />
     ) : (
         <span
-            className={`editable-text ${className}`}
+            className={`${styles.editableText} ${className}`}
             onClick={() => setIsEditing(true)}
             title="Click to edit"
         >
-    {value || <i className="placeholder">{placeholder}</i>}
+    {value || <i className={styles.placeholder}>{placeholder}</i>}
         </span>
     );
 };

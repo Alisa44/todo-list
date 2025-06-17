@@ -17,7 +17,7 @@
 }
 
 .button:hover {
-    background-color: deepskyblue;
+    background-color: #eee;
     transform: translateY(-1px);
 }
 

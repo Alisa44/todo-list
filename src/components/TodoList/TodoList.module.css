@@ -1,22 +1,21 @@
 .board {
     min-height: 80vh;
     display: flex;
-    gap: 16px;
-    padding: 16px;
     overflow-x: auto;
-    flex-wrap: nowrap;
+    gap: 20px;
+    padding: 20px;
     align-items: baseline;
     justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
     .board {
-        flex-wrap: wrap;
         justify-content: center;
     }
 }
 
-.add-column-btn {
+.addColumnBtn {
     min-width: 220px;
     height: 60px;
     display: inline-flex;
@@ -36,6 +35,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
-.add-column-btn:hover {
+.addColumnBtn:hover {
     background-color: #e0e0e0;
 }

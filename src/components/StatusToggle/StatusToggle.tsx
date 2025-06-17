@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles.pcss';
+import styles from './StatusToggle.module.css'
 
 type StatusToggleProps = {
     completed: boolean;
@@ -9,7 +9,7 @@ type StatusToggleProps = {
 const StatusToggle: React.FC<StatusToggleProps> = ({ completed, onToggle }) => {
     return (
         <button
-            className={`status-toggle ${completed ? 'active' : 'inactive'}`}
+            className={`${styles.statusToggle} ${completed ? styles.active : styles.inactive}`}
             onClick={onToggle}
             aria-label={completed ? 'Mark as incomplete' : 'Mark as complete'}
             title={completed ? 'Mark as incomplete' : 'Mark as complete'}

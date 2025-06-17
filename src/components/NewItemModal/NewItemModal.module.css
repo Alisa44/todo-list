@@ -1,4 +1,4 @@
-.modal-backdrop {
+.modalBackdrop {
     position: fixed;
     top: 0;
     left: 0;
@@ -35,13 +35,13 @@
     outline: 1px solid lightgrey;
 }
 
-.modal-actions {
+.modalActions {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
 }
 
-.modal-actions button {
+.modalActions button {
     padding: 8px 14px;
     font-size: 14px;
     border: none;
@@ -50,7 +50,7 @@
     transition: background 0.2s ease;
 }
 
-.modal-actions button:hover {
+.modalActions button:hover {
     background-color: #eee;
 }
 

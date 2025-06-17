@@ -63,3 +63,9 @@ button:hover {
     background-color: #f9f9f9;
   }
 }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f3f4f6;
+  color: #111827;
+}

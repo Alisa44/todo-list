@@ -1,4 +1,4 @@
-.status-toggle {
+.statusToggle {
     width: 28px;
     height: 28px;
     text-align: center;
@@ -12,19 +12,19 @@
     padding: 0;
 }
 
-.status-toggle.active {
+.statusToggle.active {
     background-color: #10b981
 }
 
-.status-toggle.inactive {
+.statusToggle.inactive {
     background-color: transparent;
     border: 2px solid lightslategray;
 }
 
-.status-toggle:hover {
+.statusToggle:hover {
     transform: scale(1.1);
 }
 
-.status-toggle:active {
+.statusToggle:active {
     transform: scale(0.95);
 }

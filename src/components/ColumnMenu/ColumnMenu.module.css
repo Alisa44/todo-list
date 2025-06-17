@@ -1,9 +1,9 @@
-.menu-container {
+.menuContainer {
     position: relative;
     display: inline-block;
 }
 
-.menu-trigger {
+.menuTrigger {
     background: none;
     border: none;
     font-size: 20px;
@@ -13,12 +13,12 @@
     transition: background 0.2s ease;
 }
 
-.menu-trigger:hover {
+.menuTrigger:hover {
     background: rgba(0, 0, 0, 0.05);
     border-radius: 4px;
 }
 
-.menu-list {
+.menuList {
     position: absolute;
     top: 28px;
     right: 0;
@@ -31,13 +31,13 @@
     min-width: 140px;
 }
 
-.menu-item {
+.menuItem {
     padding: 8px 12px;
     cursor: pointer;
     font-size: 14px;
     transition: background 0.2s ease;
 }
 
-.menu-item:hover {
+.menuItem:hover {
     background-color: #f3f4f6;
 }

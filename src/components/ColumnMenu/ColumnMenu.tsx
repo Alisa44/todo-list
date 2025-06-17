@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './styles.pcss';
+import styles from './ColumnMenu.module.css';
 
 type MenuItem = {
     label: string;
@@ -25,18 +25,18 @@ const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
     }, []);
 
     return (
-        <div className="menu-container" ref={ref}>
+        <div className={styles.menuContainer} ref={ref}>
             <button
-                className="menu-trigger"
+                className={styles.menuTrigger}
                 onClick={() => setOpen((prev) => !prev)}
             >
                 ⋮
             </button>
 
             {open && (
-                <ul className="menu-list">
+                <ul className={styles.menuList}>
                     {items.map((item, i) => (
-                        <div className="menu-item" key={i} onClick={() => { item.onClick(); setOpen(false); }}>
+                        <div className={styles.menuItem} key={i} onClick={() => { item.onClick(); setOpen(false); }}>
                             {item.label}
                         </div>
                     ))}

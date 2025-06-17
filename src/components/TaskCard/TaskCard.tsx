@@ -1,4 +1,3 @@
-import './styles.pcss';
 import React, {useEffect, useState} from "react";
 import type {ITask} from "../../types/types.ts";
 import Button from "../Button/Button.tsx";
@@ -7,6 +6,7 @@ import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
 import EditableText from "../EditableText/EditableText.tsx";
 import {EditIcon} from "../EditIcon/EditIcon.tsx";
 import {DeleteIcon} from "../DeleteIcon/DeleteIcon.tsx";
+import styles from './TaskCard.module.css'
 
 const TaskCard: React.FC<ITask> = ({   id,
                                        title,
@@ -46,63 +46,52 @@ const TaskCard: React.FC<ITask> = ({   id,
         }
     }
 
-    const onEditTaskTitle = () => {
+    const onEditTaskTitle = (newTitle: string) => {
         const columnToUpdate = columns.find(column => column.id === columnId);
         if (columnToUpdate) {
             updateColumn({
                 ...columnToUpdate,
                 tasks: columnToUpdate.tasks.map(task => task.id === id
-                    ? {...task, title: currentTitle.trim()}
+                    ? {...task, title: newTitle.trim()}
                     : task)
             })
         }
     }
 
-    const handleSave = () => {
-        if (currentTitle.trim() && currentTitle !== title) {
-            onEditTaskTitle();
+    const handleSave = (newTitle: string) => {
+        if (newTitle.trim() && newTitle !== title) {
+            onEditTaskTitle(newTitle);
         }
-        setIsEditing(false);
-    };
-
-    const handleCancel = () => {
-        setCurrentTitle(title);
         setIsEditing(false);
     };
 
     const onSelectTask = () => onSelect && onSelect(id)
 
     return (
-        <div className={`task-card ${completed ? 'completed' : ''}  ${selected ? 'selected' : ''}`}>
-            <div className="task-content">
+        <div className={`${styles.taskCard} ${completed ? styles.completed : ''}  ${selected ? styles.selected : ''}`}>
+            <div className={styles.taskContent}>
                 <input
                     title={selected ? "Deselect" : "Select"}
                     type="checkbox"
                     checked={selected}
                     onChange={onSelectTask}
-                    className="checkbox"
+                    className={styles.checkbox}
                 />
                 <EditableText
                     isEditing={isEditing}
                     setIsEditing={setIsEditing}
                     value={currentTitle}
-                    onChange={setCurrentTitle}
-                    inputClassName="task-input"
-                    className="task-title"
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleSave();
-                        if (e.key === 'Escape') handleCancel();
-                    }}/>
+                    onChange={handleSave}
+                    inputClassName={styles.taskInput}
+                    className={styles.taskTitle}/>
             </div>
 
-            <div className="task-actions">
+            <div className={styles.taskActions}>
                 <StatusToggle completed={completed} onToggle={onStatusChange}/>
-                <div>
-                    <Button onClick={onEdit} className="edit-btn" title="Edit"><EditIcon size={20}/></Button>
-                    <Button onClick={onDeleteTask} className="delete-btn" title="Delete">
-                        <DeleteIcon color="#10b981" size={20}/>️
-                    </Button>
-                </div>
+                <Button onClick={onEdit} className={styles.editBtn} title="Edit"><EditIcon size={24}/></Button>
+                <Button onClick={onDeleteTask} className={styles.deleteBtn} title="Delete">
+                    <DeleteIcon color="#10b981" size={24}/>️
+                </Button>
             </div>
         </div>
     );
