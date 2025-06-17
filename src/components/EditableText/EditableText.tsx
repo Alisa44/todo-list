@@ -48,7 +48,7 @@ const EditableText: React.FC<EditableTextProps> = ({
         setIsEditing(false);
     };
 
-    const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') handleSave();
         if (e.key === 'Escape') handleCancel();
         rest.onKeyDown?.(e);
@@ -61,7 +61,7 @@ const EditableText: React.FC<EditableTextProps> = ({
             value={currentText}
             onChange={(e) => setCurrentText(e.target.value)}
             onBlur={handleSave}
-            onKeyUp={handleKeyUp}
+            onKeyDown={handleKeyDown}
             className={`${styles.editableInput} ${inputClassName}`}
             {...rest}
         />

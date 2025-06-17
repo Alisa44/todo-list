@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {useState, useEffect, useRef} from 'react';
+import type {KeyboardEvent} from 'react';
 import styles from'./NewItemModal.module.css';
 import Button from "../Button/Button.tsx";
 
@@ -25,6 +26,11 @@ const NewItemModal: React.FC<NewTaskModalProps> = ({ onClose, onSubmit, modalTit
         }
     };
 
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') handleSubmit();
+        if (e.key === 'Escape') onClose();
+    };
+
     return (
         <div className={styles.modalBackdrop} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -33,6 +39,7 @@ const NewItemModal: React.FC<NewTaskModalProps> = ({ onClose, onSubmit, modalTit
                     ref={inputRef}
                     type="text"
                     value={title}
+                    onKeyDown={handleKeyDown}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder={placeholder}
                 />

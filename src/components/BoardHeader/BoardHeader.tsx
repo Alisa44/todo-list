@@ -18,7 +18,7 @@ const BoardHeader: React.FC<HeaderProps> = ({ searchTerm, onSearchChange }) => {
         <header className={styles.header}>
             <h1 className={styles.title}>Task Board</h1>
             <TaskFilter searchTerm={searchTerm} onSearchChange={onSearchChange}/>
-            <Button className={styles.addColumnBtn} onClick={() => setShowModal(true)}>➕ Add Column</Button>
+            <Button onClick={() => setShowModal(true)}>➕ Add Column</Button>
             {showModal && (
                 <AddTaskModal
                     modalTitle="Add New Column"
