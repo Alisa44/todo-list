@@ -9,9 +9,16 @@ import {DeleteIcon} from "../DeleteIcon/DeleteIcon.tsx";
 import styles from './TaskCard.module.css'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
-const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn, isDragging: boolean }> = ({task, currentColumn, isDragging}) => {
+type TaskCardProps = {
+    task: ITask;
+    currentColumn?: IBaseColumn;
+    isDragging: boolean;
+}
+
+const TaskCard: React.FC<TaskCardProps> = ({task, currentColumn, isDragging}) => {
     const {updateColumn, columns} = useBoardContext();
-    const {   id,
+    const {
+        id,
         title,
         completed,
         selected,
@@ -19,14 +26,12 @@ const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn, isDragging:
     } = task
 
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [currentTitle, setCurrentTitle] = useState<string>('');
     const ref = useRef<HTMLDivElement|null>(null);
     const selectedTaskIds = useMemo(() => {
-        return currentColumn?.tasks.filter(task => task.selected)?.map(task => task.id)
+        return currentColumn?.tasks.filter(task => task.selected)?.map(task => task.id) ?? []
     }, [currentColumn])
 
     useEffect(() => {
-        setCurrentTitle(title)
         if (ref.current) {
             draggable({
                 element: ref.current,
@@ -45,7 +50,7 @@ const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn, isDragging:
                 },
             });
         }
-    }, [title, ref, selected, selectedTaskIds])
+    }, [ref, selected, selectedTaskIds])
 
     const onEdit = () => setIsEditing(prevState => !prevState);
 
@@ -111,7 +116,7 @@ const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn, isDragging:
                 <EditableText
                     isEditing={isEditing}
                     setIsEditing={setIsEditing}
-                    value={currentTitle}
+                    value={title}
                     onChange={handleSave}
                     inputClassName={styles.taskInput}
                     className={styles.taskTitle}/>
@@ -124,6 +129,10 @@ const TaskCard: React.FC<{ task: ITask, currentColumn?: IBaseColumn, isDragging:
                     <DeleteIcon color="#10b981" size={24}/>️
                 </Button>
             </div>
+
+            {/*{isDragging && selectedTaskIds.length > 1 && (*/}
+            {/*    <div className={styles.dragCountBadge}>+{selectedTaskIds.length}</div>*/}
+            {/*)}*/}
         </div>
     );
 };

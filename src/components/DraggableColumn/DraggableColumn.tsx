@@ -3,33 +3,27 @@ import type {ITaskColumn} from "../../types/types.ts";
 import TaskCard from "../TaskCard/TaskCard.tsx";
 import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
 import { v4 as uuidv4 } from 'uuid';
-import styles from './TaskColumn.module.css';
+import styles from './DraggableColumn.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
 import ColumnMenu from "../ColumnMenu/ColumnMenu.tsx";
 import Button from "../Button/Button.tsx";
 import EditableText from "../EditableText/EditableText.tsx";
-import {dropTargetForElements} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-import type {ElementDragPayload, ElementDropTargetGetFeedbackArgs} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-import type {DragLocationHistory} from "@atlaskit/pragmatic-drag-and-drop/types";
+import {draggable, dropTargetForElements} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
-type ElementEventBasePayload = {
-    location: DragLocationHistory;
-    source: ElementDragPayload;
-};
-
-const TaskColumn: React.FC<ITaskColumn> = ({   id,
+const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                                                title,
                                                tasks,
                                                onDeleteColumn,
                                                onSelectAll,
                                                children,
+                                                                      index,
                                            }) => {
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
     const [isDragging, setDragging] = useState<boolean>(false);
     const columnRef = useRef<HTMLDivElement|null>(null)
-    const {columns, updateColumn} = useBoardContext();
+    const {columns, updateColumn, setColumns} = useBoardContext();
     const currentColumn = useMemo(() => columns.find(column => column.id === id), [columns])
 
     const moveTasks = useCallback((taskIds: string[], fromColumnId: string, columnId: string) => {
@@ -56,10 +50,10 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
                 element: columnRef.current,
                 onDragStart: () => setDragging(true),
                 onDragLeave: () => setDragging(false),
-                canDrop: (props: ElementDropTargetGetFeedbackArgs) => props.source.data?.type === 'task-group',
-                onDrop: (props: ElementEventBasePayload) => {
-                    const { fromColumnId } = props.source.data;
-                    const taskIds: string[] = props.source.data.taskIds;
+                canDrop: ({source}) => source.data?.type === 'task-group',
+                onDrop: ({ source }) => {
+                    const { fromColumnId } = source.data;
+                    const taskIds: string[] = source.data.taskIds as string[];
                     if (typeof fromColumnId !== 'string') {
                         return;
                     }
@@ -67,6 +61,44 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
             });
         }
     }, [columnRef, moveTasks]);
+
+    useEffect(() => {
+        if (columnRef?.current) {
+            return dropTargetForElements({
+                element: columnRef.current,
+                canDrop: ({ source }) => source.data?.type === 'column',
+                onDrop: ({ source, location }) => {
+                    const { columnId } = source.data;
+                    const draggedIndex = columns.findIndex((c) => c.id === columnId);
+                    const overElement = location.current.dropTargets[0]?.element?.id;
+                    const targetIndex = columns.findIndex(column => column.id ===overElement);
+
+                    if (draggedIndex === targetIndex) return;
+                    let updated = [...columns];
+                    const [moved] = updated.splice(draggedIndex, 1);
+                    if (targetIndex > -1) {
+                        updated.splice(targetIndex, 0, moved);
+                    } else {
+                        updated = [...updated, moved]
+                    }
+                    setColumns(updated);
+                },
+            });
+        }
+    }, [columns, columnRef]);
+
+    useEffect(() => {
+        if (!columnRef.current) return;
+
+        return draggable({
+            element: columnRef.current,
+            getInitialData: () => ({
+                type: 'column',
+                columnId: id,
+                index,
+            }),
+        });
+    }, [id, index]);
 
     useEffect(() => {
         setCurrentTitle(title)
@@ -117,7 +149,7 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
     }
 
     return (
-        <div className={styles.taskColumn} ref={columnRef}>
+        <div className={styles.taskColumn} ref={columnRef} id={id}>
             <div className={styles.columnHeader}>
                 <div className="drag-handle" style={{display: 'none'}}>{children}</div>
                 <EditableText
@@ -173,4 +205,4 @@ const TaskColumn: React.FC<ITaskColumn> = ({   id,
     );
 };
 
-export default TaskColumn;
+export default DraggableColumn;

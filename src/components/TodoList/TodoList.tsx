@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import TaskColumn from "../TasksColumn/TasksColumn.tsx";
+import React, {useEffect, useRef, useState} from 'react';
+import DraggableColumn from "../DraggableColumn/DraggableColumn.tsx";
 import styles from './TodoList.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
 import BoardHeader from "../BoardHeader/BoardHeader.tsx";
 import type {IBaseColumn} from "../../types/types.ts";
+import EndDropZone from "../EndDropZone/EndDropZone.tsx";
 
 const TodoList: React.FC = () => {
     const {
@@ -14,6 +15,7 @@ const TodoList: React.FC = () => {
 
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [currentColumns, setCurrentColumns] = useState<IBaseColumn[]>([]);
+    const boardRef = useRef<HTMLDivElement|null>(null);
 
     useEffect(() => {
         setCurrentColumns(columns)
@@ -43,9 +45,10 @@ const TodoList: React.FC = () => {
     return (
         <div>
             <BoardHeader onSearchChange={onSearchChange} searchTerm={searchTerm}/>
-            <div className={styles.board}>
-                {currentColumns.map((column) => (
-                    <TaskColumn
+            <div className={styles.board} ref={boardRef}>
+                {currentColumns.map((column, index) => (
+                    <DraggableColumn
+                        index={index}
                         key={column.id}
                         id={column.id}
                         title={column.title}
@@ -53,8 +56,9 @@ const TodoList: React.FC = () => {
                         onDeleteColumn={() => deleteColumn(column.id)}
                         onSelectAll={() => selectAllTasksInColumn(column.id)}
                     >
-                    </TaskColumn>
+                    </DraggableColumn>
                 ))}
+                <EndDropZone/>
             </div>
         </div>
     );
