@@ -1,7 +1,6 @@
 import './styles.pcss';
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import type {ITask} from "../../types/types.ts";
-import {onEditTitle} from "../../utils/utils.ts";
 import Button from "../Button/Button.tsx";
 import StatusToggle from "../StatusToggle/StatusToggle.tsx";
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
@@ -19,29 +18,10 @@ const TaskCard: React.FC<ITask> = ({   id,
     const {updateColumn, columns} = useBoardContext();
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
-    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         setCurrentTitle(title)
     }, [title])
-
-    useEffect(() => {
-        if (isEditing && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isEditing]);
-
-    const handleSave = () => {
-        if (currentTitle.trim() && currentTitle !== title) {
-            onEditTitle(id, currentTitle.trim(), columnId);
-        }
-        setIsEditing(false);
-    };
-
-    const handleCancel = () => {
-        setCurrentTitle(title);
-        setIsEditing(false);
-    };
 
     const onEdit = () => setIsEditing(prevState => !prevState);
 
@@ -65,6 +45,30 @@ const TaskCard: React.FC<ITask> = ({   id,
             })
         }
     }
+
+    const onEditTaskTitle = () => {
+        const columnToUpdate = columns.find(column => column.id === columnId);
+        if (columnToUpdate) {
+            updateColumn({
+                ...columnToUpdate,
+                tasks: columnToUpdate.tasks.map(task => task.id === id
+                    ? {...task, title: currentTitle.trim()}
+                    : task)
+            })
+        }
+    }
+
+    const handleSave = () => {
+        if (currentTitle.trim() && currentTitle !== title) {
+            onEditTaskTitle();
+        }
+        setIsEditing(false);
+    };
+
+    const handleCancel = () => {
+        setCurrentTitle(title);
+        setIsEditing(false);
+    };
 
     const onSelectTask = () => onSelect && onSelect(id)
 
