@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import type {InputHTMLAttributes} from 'react';
 import styles from './TextInput.module.css';
 
-type TaskFilterProps = {
+type TextInputProps = {
     value: string;
     onChange: (value: string) => void;
     placeholder?: string;
@@ -10,7 +10,7 @@ type TaskFilterProps = {
     needsFocus?: boolean
 }  & Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>;
 
-const TextInput: React.FC<TaskFilterProps> = ({ needsFocus, value, onChange, placeholder, className, ...rest }) => {
+const TextInput: React.FC<TextInputProps> = ({ needsFocus, value, onChange, placeholder, className, ...rest }) => {
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {

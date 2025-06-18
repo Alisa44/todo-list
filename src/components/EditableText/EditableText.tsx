@@ -1,10 +1,10 @@
 import React, {
     useState,
-    useRef,
     useEffect
 } from 'react';
 import type {KeyboardEvent, InputHTMLAttributes, Dispatch, SetStateAction} from 'react'
 import styles from './EditableText.module.css';
+import TextArea from "../TextArea/TextArea.tsx";
 
 type EditableTextProps = {
     value: string;
@@ -14,7 +14,7 @@ type EditableTextProps = {
     className?: string;
     placeholder?: string;
     inputClassName?: string;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>;
+} & Omit<InputHTMLAttributes<HTMLTextAreaElement>, 'value' | 'onChange'>;
 
 const EditableText: React.FC<EditableTextProps> = ({
                                                        value,
@@ -27,12 +27,10 @@ const EditableText: React.FC<EditableTextProps> = ({
                                                        ...rest
                                                    }) => {
     const [currentText, setCurrentText] = useState(value);
-    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (isEditing) {
             setCurrentText(value);
-            inputRef.current?.focus();
         }
     }, [isEditing]);
 
@@ -48,20 +46,18 @@ const EditableText: React.FC<EditableTextProps> = ({
         setIsEditing(false);
     };
 
-    const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter') handleSave();
         if (e.key === 'Escape') handleCancel();
-        rest.onKeyDown?.(e);
     };
 
     return isEditing ? (
-        <input
-            ref={inputRef}
+        <TextArea
             type="text"
             value={currentText}
-            onChange={(e) => setCurrentText(e.target.value)}
+            onChange={(value) => setCurrentText(value)}
             onBlur={handleSave}
-            onKeyDown={handleKeyUp}
+            onKeyDown={handleKeyDown}
             className={`${styles.editableInput} ${inputClassName}`}
             {...rest}
         />
