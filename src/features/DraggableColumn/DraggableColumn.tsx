@@ -5,7 +5,7 @@ import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
 import { v4 as uuidv4 } from 'uuid';
 import styles from './DraggableColumn.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
-import ColumnMenu from "../../components/ColumnMenu/ColumnMenu.tsx";
+import ColumnMenu from "../ColumnMenu/ColumnMenu.tsx";
 import Button from "../../components/Button/Button.tsx";
 import EditableText from "../../components/EditableText/EditableText.tsx";
 import {draggable, dropTargetForElements} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
@@ -13,8 +13,6 @@ import {draggable, dropTargetForElements} from '@atlaskit/pragmatic-drag-and-dro
 const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                                                title,
                                                tasks,
-                                               onDeleteColumn,
-                                               onSelectAll,
                                                                       index,
                                            }) => {
     const [showModal, setShowModal] = useState(false);
@@ -130,27 +128,6 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
         }
     }
 
-    const onDeleteSelectedTasks = () => {
-        if (currentColumn) {
-            updateColumn({...currentColumn,
-                tasks: currentColumn.tasks.filter(task => !task.selected)})
-        }
-    }
-
-    const onMarkSelectedAsComplete = () => {
-        if (currentColumn) {
-            updateColumn({...currentColumn,
-                tasks: currentColumn.tasks.map(task => task.selected ? ({...task, completed: true}) : task)})
-        }
-    }
-
-    const onMarkSelectedAsIncomplete = () => {
-        if (currentColumn) {
-            updateColumn({...currentColumn,
-                tasks: currentColumn.tasks.map(task => task.selected ? ({...task, completed: false}) : task)})
-        }
-    }
-
     return (
         <div className={styles.taskColumn} id={id} ref={columnRef}>
             <div className={styles.columnHeader} >
@@ -161,28 +138,7 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                     onChange={handleSave}
                     inputClassName={styles.columnInput}
                     className={styles.columnTitle}/>
-                <ColumnMenu
-                    items={[
-                        { label: 'Edit Title', onClick: () => setIsEditing(true) },
-                        { label: 'Delete Column', onClick: onDeleteColumn },
-                        { label: 'Select All', onClick: onSelectAll},
-                        {
-                            label: 'Delete Selected',
-                            onClick: onDeleteSelectedTasks,
-                            disabled: !currentColumn?.tasks.find(task => task.selected)
-                        },
-                        {
-                            label: 'Mark Selected As Complete',
-                            onClick: onMarkSelectedAsComplete,
-                            disabled: !currentColumn?.tasks.find(task => task.selected)
-                        },
-                        {
-                            label: 'Mark Selected As Incomplete',
-                            onClick: onMarkSelectedAsIncomplete,
-                            disabled: !currentColumn?.tasks.find(task => task.selected)
-                        },
-                    ]}
-                />
+                <ColumnMenu currentColumn={currentColumn} setIsEditing={setIsEditing}/>
             </div>
 
             <div className={styles.tasksWrapper} ref={tasksWrapperRef}>

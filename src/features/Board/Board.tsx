@@ -7,11 +7,7 @@ import type {IBaseColumn, TSortValue} from "../../types/types.ts";
 import EndDropZone from "../../components/EndDropZone/EndDropZone.tsx";
 
 const Board: React.FC = () => {
-    const {
-        columns,
-        deleteColumn,
-        updateColumn,
-    } = useBoardContext();
+    const {columns} = useBoardContext();
 
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [statusFilter, setStatusFilter] = useState<TSortValue>('all');
@@ -21,17 +17,6 @@ const Board: React.FC = () => {
     useEffect(() => {
         setCurrentColumns(columns)
     }, [columns])
-
-    const selectAllTasksInColumn = (columnId: string) => {
-        const columnToUpdate = columns.find(column => column.id === columnId)
-        if (columnToUpdate) {
-            const updated = {
-                ...columnToUpdate,
-                tasks: columnToUpdate.tasks.map(task => ({...task, selected: true}))
-            }
-            updateColumn(updated)
-        }
-    };
 
     const onSearchChange = (value: string) => {
         setSearchTerm(value)
@@ -77,8 +62,6 @@ const Board: React.FC = () => {
                         id={column.id}
                         title={column.title}
                         tasks={column.tasks}
-                        onDeleteColumn={() => deleteColumn(column.id)}
-                        onSelectAll={() => selectAllTasksInColumn(column.id)}
                     />
                 ))}
                 <EndDropZone/>

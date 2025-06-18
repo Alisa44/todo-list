@@ -18,9 +18,7 @@ export interface IBaseColumn {
     tasks: ITask[];
 }
 
-export interface ITaskColumn extends IBaseColumn{
-    onDeleteColumn: () => void;
-    onSelectAll: () => void;
+export interface ITaskColumn extends IBaseColumn {
     children?: ReactNode;
 }
 

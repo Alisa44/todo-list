@@ -1,23 +1,31 @@
 import React from 'react';
 import styles from './StatusFilter.module.css';
-import type {TSortValue} from "../../types/types.ts";
+import {getFormattedText} from "../../utils/utils.ts";
+import Menu from "../Menu/Menu.tsx";
+import type {TMenuItem} from "../../types/types.ts";
 
-type SortMenuProps = {
-    value: TSortValue;
-    onChange: (value: TSortValue) => void;
+const options = ['all', 'active', 'completed'] as const;
+type Option = typeof options[number];
+
+type Props = {
+    value: Option;
+    onChange: (value: Option) => void;
 };
 
-const StatusFilter: React.FC<SortMenuProps> = ({ value, onChange }) => {
+const StatusFilter: React.FC<Props> = ({ value, onChange }) => {
+    const menuItems: TMenuItem[] = options.map(opt => ({
+        label: getFormattedText(opt),
+        onClick: () => onChange(opt)
+    }))
+
     return (
-        <select
-            className={styles.sortSelect}
-            value={value}
-            onChange={(e) => onChange(e.target.value as TSortValue)}
-        >
-            <option value="all">All Tasks</option>
-            <option value="active">Active</option>
-            <option value="completed">Completed</option>
-        </select>
+        <Menu
+            items={menuItems}
+            triggerElement={<>{getFormattedText(value)} <div>⯆</div></>}
+            containerClassName={styles.wrapper}
+            triggerClassName={styles.trigger}
+            listClassName={styles.menu}
+        />
     );
 };
 

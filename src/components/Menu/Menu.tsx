@@ -1,13 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from './ColumnMenu.module.css';
+import styles from './Menu.module.css';
 import type {TMenuItem} from "../../types/types.ts";
 import MenuItem from "./MenuItem/MenuItem.tsx";
 
-type MenuButtonProps = {
+type MenuProps = {
     items: TMenuItem[];
+    containerClassName?: string;
+    triggerClassName?: string;
+    listClassName?: string;
+    triggerElement: React.ReactElement;
 };
 
-const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
+const Menu: React.FC<MenuProps> = ({ items, triggerClassName, triggerElement, listClassName, containerClassName }) => {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -29,15 +33,15 @@ const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
     const onMenuOpen = () => setOpen((prev) => !prev)
 
     return (
-        <div className={styles.menuContainer} ref={ref}>
-            <button className={styles.menuTrigger} onClick={onMenuOpen}>
-                ⋮
+        <div className={containerClassName ?? styles.menuContainer} ref={ref}>
+            <button className={triggerClassName ?? styles.menuTrigger} onClick={onMenuOpen}>
+                {triggerElement}
             </button>
 
             {open && (
-                <ul className={styles.menuList}>
+                <ul className={listClassName ?? styles.menuList}>
                     {items.map((item, i) => (
-                        <MenuItem item={item} index={i} onItemClick={onItemClick}/>
+                        <MenuItem item={item} index={i} onItemClick={onItemClick} key={item.label}/>
                     ))}
                 </ul>
             )}
@@ -45,4 +49,4 @@ const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
     );
 };
 
-export default MenuButton;
+export default Menu;

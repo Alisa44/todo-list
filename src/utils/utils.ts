@@ -19,3 +19,7 @@ export const onEditTitle = (id: string, newTitle: string, columnId: string) => {
     })
     localStorage.setItem(columnListKey, JSON.stringify(updatedColumns))
 }
+
+export const getFormattedText = (value: string): string => {
+    return value.charAt(0).toUpperCase() + value.slice(1)
+}

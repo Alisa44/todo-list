@@ -131,10 +131,6 @@ const TaskCard: React.FC<TaskCardProps> = ({task, currentColumn, isDragging, ind
                     <DeleteIcon color="#10b981" size={24}/>️
                 </Button>
             </div>
-
-            {/*{isDragging && selectedTaskIds.length > 1 && (*/}
-            {/*    <div className={styles.dragCountBadge}>+{selectedTaskIds.length}</div>*/}
-            {/*)}*/}
         </div>
     );
 };
