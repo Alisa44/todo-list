@@ -1,14 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './ColumnMenu.module.css';
-
-type MenuItem = {
-    label: string;
-    onClick: () => void;
-    disabled?: boolean;
-};
+import type {TMenuItem} from "../../types/types.ts";
+import MenuItem from "./MenuItem/MenuItem.tsx";
 
 type MenuButtonProps = {
-    items: MenuItem[];
+    items: TMenuItem[];
 };
 
 const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
@@ -23,31 +19,25 @@ const MenuButton: React.FC<MenuButtonProps> = ({ items }) => {
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+    }, [ref]);
 
-    const onItemClick = (item: MenuItem) => {
+    const onItemClick = (item: TMenuItem) => {
         !item.disabled && item.onClick();
         setOpen(false);
     }
 
+    const onMenuOpen = () => setOpen((prev) => !prev)
+
     return (
         <div className={styles.menuContainer} ref={ref}>
-            <button
-                className={styles.menuTrigger}
-                onClick={() => setOpen((prev) => !prev)}
-            >
+            <button className={styles.menuTrigger} onClick={onMenuOpen}>
                 ⋮
             </button>
 
             {open && (
                 <ul className={styles.menuList}>
                     {items.map((item, i) => (
-                        <div
-                            className={`${styles.menuItem} ${item.disabled ? styles.disabled : ''}`}
-                            key={i}
-                            onClick={() => onItemClick(item)}>
-                            {item.label}
-                        </div>
+                        <MenuItem item={item} index={i} onItemClick={onItemClick}/>
                     ))}
                 </ul>
             )}

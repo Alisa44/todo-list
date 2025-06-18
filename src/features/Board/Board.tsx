@@ -4,7 +4,7 @@ import styles from './Board.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
 import BoardHeader from "../BoardHeader/BoardHeader.tsx";
 import type {IBaseColumn, TSortValue} from "../../types/types.ts";
-import EndDropZone from "../EndDropZone/EndDropZone.tsx";
+import EndDropZone from "../../components/EndDropZone/EndDropZone.tsx";
 
 const Board: React.FC = () => {
     const {

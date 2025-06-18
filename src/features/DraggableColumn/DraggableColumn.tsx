@@ -5,9 +5,9 @@ import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
 import { v4 as uuidv4 } from 'uuid';
 import styles from './DraggableColumn.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
-import ColumnMenu from "../ColumnMenu/ColumnMenu.tsx";
-import Button from "../Button/Button.tsx";
-import EditableText from "../EditableText/EditableText.tsx";
+import ColumnMenu from "../../components/ColumnMenu/ColumnMenu.tsx";
+import Button from "../../components/Button/Button.tsx";
+import EditableText from "../../components/EditableText/EditableText.tsx";
 import {draggable, dropTargetForElements} from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 
 const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
@@ -21,9 +21,11 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
     const [isDragging, setDragging] = useState<boolean>(false);
-    const columnHeaderRef = useRef<HTMLDivElement|null>(null)
-    const columnWrapperRef = useRef<HTMLDivElement|null>(null)
     const {columns, updateColumn, setColumns} = useBoardContext();
+
+    const columnRef = useRef<HTMLDivElement|null>(null)
+    const tasksWrapperRef = useRef<HTMLDivElement|null>(null)
+
     const currentColumn = useMemo(() => columns.find(column => column.id === id), [columns])
 
     const moveTasks = useCallback((tasks: ITask[], fromColumnId: string, columnId: string) => {
@@ -46,9 +48,9 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
     }, [columns])
 
     useEffect(() => {
-        if (columnWrapperRef?.current) {
+        if (tasksWrapperRef?.current) {
             return dropTargetForElements({
-                element: columnWrapperRef.current,
+                element: tasksWrapperRef.current,
                 onDragStart: () => setDragging(true),
                 onDragLeave: () => setDragging(false),
                 canDrop: ({source}) => source.data?.type === 'task-group',
@@ -61,12 +63,12 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                     moveTasks(tasks, fromColumnId, id);}
             });
         }
-    }, [columnWrapperRef, moveTasks]);
+    }, [tasksWrapperRef, moveTasks]);
 
     useEffect(() => {
-        if (columnHeaderRef?.current) {
+        if (columnRef?.current) {
             return dropTargetForElements({
-                element: columnHeaderRef.current,
+                element: columnRef.current,
                 canDrop: ({ source }) => source.data?.type === 'column',
                 onDrop: ({ source, location }) => {
                     const { columnId } = source.data;
@@ -86,13 +88,13 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                 },
             });
         }
-    }, [columns, columnHeaderRef]);
+    }, [columns, columnRef]);
 
     useEffect(() => {
-        if (!columnHeaderRef.current) return;
+        if (!columnRef.current) return;
 
         return draggable({
-            element: columnHeaderRef.current,
+            element: columnRef.current,
             getInitialData: () => ({
                 type: 'column',
                 columnId: id,
@@ -150,8 +152,8 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
     }
 
     return (
-        <div className={styles.taskColumn} id={id} ref={columnWrapperRef}>
-            <div className={styles.columnHeader} ref={columnHeaderRef}>
+        <div className={styles.taskColumn} id={id} ref={columnRef}>
+            <div className={styles.columnHeader} >
                 <EditableText
                     isEditing={isEditing}
                     setIsEditing={setIsEditing}
@@ -183,7 +185,7 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                 />
             </div>
 
-            <div>
+            <div className={styles.tasksWrapper} ref={tasksWrapperRef}>
                 <div className={styles.columnActions}>
                     <Button onClick={() => setShowModal(true)}>➕ Create</Button>
                 </div>

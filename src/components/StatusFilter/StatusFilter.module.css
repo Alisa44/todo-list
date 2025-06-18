@@ -3,11 +3,16 @@
     border: 1px solid #d1d5db;
     border-radius: 6px;
     background: white;
-    font-size: 14px;
+    font-size: 16px;
     color: #111827;
+    opacity: 0.6;
 }
 
-@media (max-width: 640px) {
+.sortSelect:focus {
+    outline: none;
+}
+
+@media (max-width: 768px) {
     .sortSelect {
         width: 100%;
     }

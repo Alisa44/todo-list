@@ -1,11 +1,11 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
 import type {IBaseColumn, ITask} from "../../types/types.ts";
-import Button from "../Button/Button.tsx";
-import StatusToggle from "../StatusToggle/StatusToggle.tsx";
+import Button from "../../components/Button/Button.tsx";
+import StatusToggle from "../../components/StatusToggle/StatusToggle.tsx";
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
-import EditableText from "../EditableText/EditableText.tsx";
-import {EditIcon} from "../EditIcon/EditIcon.tsx";
-import {DeleteIcon} from "../DeleteIcon/DeleteIcon.tsx";
+import EditableText from "../../components/EditableText/EditableText.tsx";
+import {EditIcon} from "../../icons/EditIcon/EditIcon.tsx";
+import {DeleteIcon} from "../../icons/DeleteIcon/DeleteIcon.tsx";
 import styles from './TaskCard.module.css'
 import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 

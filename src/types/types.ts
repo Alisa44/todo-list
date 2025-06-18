@@ -25,3 +25,9 @@ export interface ITaskColumn extends IBaseColumn{
 }
 
 export type TSortValue = 'all' | 'completed' | 'active'
+
+export type TMenuItem = {
+    label: string;
+    onClick: () => void;
+    disabled?: boolean;
+};

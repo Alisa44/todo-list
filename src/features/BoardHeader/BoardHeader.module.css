@@ -1,0 +1,52 @@
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    gap: 24px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    flex: 1 1 auto;
+}
+
+.searchInput {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+}
+
+.searchInput:focus {
+    outline: none;
+}
+
+.filter {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .title {
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    .filter {
+        padding: 0;
+    }
+}

@@ -30,18 +30,3 @@
     z-index: 10;
     min-width: 140px;
 }
-
-.menuItem {
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s ease;
-}
-
-.menuItem:hover {
-    background-color: #f3f4f6;
-}
-
-.disabled {
-    opacity: 0.5;
-}

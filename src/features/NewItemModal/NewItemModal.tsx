@@ -1,7 +1,8 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState} from 'react';
 import type {KeyboardEvent} from 'react';
-import styles from'./NewItemModal.module.css';
-import Button from "../Button/Button.tsx";
+import styles from './NewItemModal.module.css';
+import Button from "../../components/Button/Button.tsx";
+import TextInput from "../../components/TextInput/TextInput.tsx";
 
 type NewTaskModalProps = {
     onClose: () => void;
@@ -12,11 +13,6 @@ type NewTaskModalProps = {
 
 const NewItemModal: React.FC<NewTaskModalProps> = ({ onClose, onSubmit, modalTitle, placeholder }) => {
     const [title, setTitle] = useState('');
-    const inputRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        inputRef.current?.focus();
-    }, []);
 
     const handleSubmit = () => {
         if (title.trim()) {
@@ -35,14 +31,12 @@ const NewItemModal: React.FC<NewTaskModalProps> = ({ onClose, onSubmit, modalTit
         <div className={styles.modalBackdrop} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 <h3>{modalTitle}</h3>
-                <input
-                    ref={inputRef}
-                    type="text"
+                <TextInput
                     value={title}
-                    onKeyDown={handleKeyDown}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(value) => setTitle(value)}
                     placeholder={placeholder}
-                />
+                    needsFocus
+                    onKeyDown={handleKeyDown}/>
                 <div className={styles.modalActions}>
                     <Button className={styles.cancel} onClick={onClose}>Cancel</Button>
                     <Button onClick={handleSubmit}>Add</Button>

@@ -1,10 +1,5 @@
-.filter {
-    flex: 1;
-    padding: 12px 20px;
-}
-
 .input {
-    width: 98%;
+    width: 94%;
     padding: 8px 12px;
     font-size: 16px;
     border-radius: 6px;
