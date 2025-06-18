@@ -13,9 +13,10 @@ type TaskCardProps = {
     task: ITask;
     currentColumn?: IBaseColumn;
     isDragging: boolean;
+    index: number;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({task, currentColumn, isDragging}) => {
+const TaskCard: React.FC<TaskCardProps> = ({task, currentColumn, isDragging, index}) => {
     const {updateColumn, columns} = useBoardContext();
     const {
         id,
@@ -27,8 +28,8 @@ const TaskCard: React.FC<TaskCardProps> = ({task, currentColumn, isDragging}) =>
 
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const ref = useRef<HTMLDivElement|null>(null);
-    const selectedTaskIds = useMemo(() => {
-        return currentColumn?.tasks.filter(task => task.selected)?.map(task => task.id) ?? []
+    const selectedTasks = useMemo(() => {
+        return currentColumn?.tasks.filter(task => task.selected) ?? []
     }, [currentColumn])
 
     useEffect(() => {
@@ -37,20 +38,21 @@ const TaskCard: React.FC<TaskCardProps> = ({task, currentColumn, isDragging}) =>
                 element: ref.current,
                 canDrag: () => selected,
                 getInitialData: () => {
-                    const isSelected = selectedTaskIds?.includes(task.id);
+                    const isSelected = selectedTasks?.find(item => task.id === item.id);
                     const tasksToMove = isSelected
-                        ? selectedTaskIds
-                        : [task.id];
+                        ? selectedTasks
+                        : [task];
 
                     return {
                         type: 'task-group',
                         taskIds: tasksToMove,
                         fromColumnId: columnId,
+                        index
                     };
                 },
             });
         }
-    }, [ref, selected, selectedTaskIds])
+    }, [ref, selected, selectedTasks, index])
 
     const onEdit = () => setIsEditing(prevState => !prevState);
 

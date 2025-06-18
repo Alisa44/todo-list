@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import type {ITaskColumn} from "../../types/types.ts";
+import type {ITaskColumn, ITask} from "../../types/types.ts";
 import TaskCard from "../TaskCard/TaskCard.tsx";
 import AddTaskModal from "../NewItemModal/NewItemModal.tsx";
 import { v4 as uuidv4 } from 'uuid';
@@ -15,24 +15,25 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                                                tasks,
                                                onDeleteColumn,
                                                onSelectAll,
-                                               children,
                                                                       index,
                                            }) => {
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [currentTitle, setCurrentTitle] = useState<string>('');
     const [isDragging, setDragging] = useState<boolean>(false);
-    const columnRef = useRef<HTMLDivElement|null>(null)
+    const columnHeaderRef = useRef<HTMLDivElement|null>(null)
+    const columnWrapperRef = useRef<HTMLDivElement|null>(null)
     const {columns, updateColumn, setColumns} = useBoardContext();
     const currentColumn = useMemo(() => columns.find(column => column.id === id), [columns])
 
-    const moveTasks = useCallback((taskIds: string[], fromColumnId: string, columnId: string) => {
+    const moveTasks = useCallback((tasks: ITask[], fromColumnId: string, columnId: string) => {
         const prevColumn = columns.find(column => column.id === fromColumnId)
         const targetColumn = columns.find(column => column.id === columnId)
+        const taskIds = tasks.map(task => task.id);
         if (prevColumn && targetColumn) {
             const draggedTasks = prevColumn.tasks.filter(task => taskIds.includes(task.id));
             if (draggedTasks.length && columnId) {
-                const updatedTasks = draggedTasks.map(task => ({...task, columnId}))
+                const updatedTasks = draggedTasks.map(task => ({...task, columnId, selected: false}))
                 const filteredTasks = prevColumn.tasks.filter(task => !taskIds.includes(task.id))
                 if (targetColumn.id !== prevColumn.id) {
                     updateColumn({...targetColumn, tasks: [...targetColumn.tasks, ...updatedTasks]})
@@ -45,27 +46,27 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
     }, [columns])
 
     useEffect(() => {
-        if (columnRef?.current) {
+        if (columnWrapperRef?.current) {
             return dropTargetForElements({
-                element: columnRef.current,
+                element: columnWrapperRef.current,
                 onDragStart: () => setDragging(true),
                 onDragLeave: () => setDragging(false),
                 canDrop: ({source}) => source.data?.type === 'task-group',
                 onDrop: ({ source }) => {
                     const { fromColumnId } = source.data;
-                    const taskIds: string[] = source.data.taskIds as string[];
+                    const tasks: ITask[] = source.data.taskIds as ITask[];
                     if (typeof fromColumnId !== 'string') {
                         return;
                     }
-                    moveTasks(taskIds, fromColumnId, id);}
+                    moveTasks(tasks, fromColumnId, id);}
             });
         }
-    }, [columnRef, moveTasks]);
+    }, [columnWrapperRef, moveTasks]);
 
     useEffect(() => {
-        if (columnRef?.current) {
+        if (columnHeaderRef?.current) {
             return dropTargetForElements({
-                element: columnRef.current,
+                element: columnHeaderRef.current,
                 canDrop: ({ source }) => source.data?.type === 'column',
                 onDrop: ({ source, location }) => {
                     const { columnId } = source.data;
@@ -85,13 +86,13 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                 },
             });
         }
-    }, [columns, columnRef]);
+    }, [columns, columnHeaderRef]);
 
     useEffect(() => {
-        if (!columnRef.current) return;
+        if (!columnHeaderRef.current) return;
 
         return draggable({
-            element: columnRef.current,
+            element: columnHeaderRef.current,
             getInitialData: () => ({
                 type: 'column',
                 columnId: id,
@@ -149,9 +150,8 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
     }
 
     return (
-        <div className={styles.taskColumn} ref={columnRef} id={id}>
-            <div className={styles.columnHeader}>
-                <div className="drag-handle" style={{display: 'none'}}>{children}</div>
+        <div className={styles.taskColumn} id={id} ref={columnWrapperRef}>
+            <div className={styles.columnHeader} ref={columnHeaderRef}>
                 <EditableText
                     isEditing={isEditing}
                     setIsEditing={setIsEditing}
@@ -183,14 +183,16 @@ const DraggableColumn: React.FC<ITaskColumn & {index: number}> = ({   id,
                 />
             </div>
 
-            <div className={styles.columnActions}>
-                <Button onClick={() => setShowModal(true)}>➕ Create</Button>
-            </div>
+            <div>
+                <div className={styles.columnActions}>
+                    <Button onClick={() => setShowModal(true)}>➕ Create</Button>
+                </div>
 
-            <div className={styles.taskList}>
-                {tasks.map((task) => (
-                    <TaskCard task={task} currentColumn={currentColumn} key={task.id} isDragging={isDragging}/>
-                ))}
+                <div className={styles.taskList}>
+                    {tasks.map((task, index) => (
+                        <TaskCard task={task} currentColumn={currentColumn} key={task.id} isDragging={isDragging} index={index}/>
+                    ))}
+                </div>
             </div>
 
             {showModal && (

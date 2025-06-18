@@ -1,12 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
 import DraggableColumn from "../DraggableColumn/DraggableColumn.tsx";
-import styles from './TodoList.module.css';
+import styles from './Board.module.css';
 import {useBoardContext} from "../../context/BoardContext/BoardContext.tsx";
 import BoardHeader from "../BoardHeader/BoardHeader.tsx";
-import type {IBaseColumn} from "../../types/types.ts";
+import type {IBaseColumn, TSortValue} from "../../types/types.ts";
 import EndDropZone from "../EndDropZone/EndDropZone.tsx";
 
-const TodoList: React.FC = () => {
+const Board: React.FC = () => {
     const {
         columns,
         deleteColumn,
@@ -14,6 +14,7 @@ const TodoList: React.FC = () => {
     } = useBoardContext();
 
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [statusFilter, setStatusFilter] = useState<TSortValue>('all');
     const [currentColumns, setCurrentColumns] = useState<IBaseColumn[]>([]);
     const boardRef = useRef<HTMLDivElement|null>(null);
 
@@ -42,9 +43,32 @@ const TodoList: React.FC = () => {
         )
     }
 
+    const onStatusChange = (value: TSortValue): void => {
+        setStatusFilter(value)
+        setCurrentColumns(
+            columns.map(column => {
+                return {
+                    ...column,
+                    tasks: column.tasks.filter(task => {
+                        return value === "completed"
+                            ? task.completed
+                            : value === "active"
+                                ? !task.completed
+                                : true
+                    })
+                }
+            })
+        )
+    }
+
     return (
         <div>
-            <BoardHeader onSearchChange={onSearchChange} searchTerm={searchTerm}/>
+            <BoardHeader
+                onSearchChange={onSearchChange}
+                searchTerm={searchTerm}
+                statusFilter={statusFilter}
+                onStatusChange={onStatusChange}/>
+
             <div className={styles.board} ref={boardRef}>
                 {currentColumns.map((column, index) => (
                     <DraggableColumn
@@ -55,8 +79,7 @@ const TodoList: React.FC = () => {
                         tasks={column.tasks}
                         onDeleteColumn={() => deleteColumn(column.id)}
                         onSelectAll={() => selectAllTasksInColumn(column.id)}
-                    >
-                    </DraggableColumn>
+                    />
                 ))}
                 <EndDropZone/>
             </div>
@@ -64,4 +87,4 @@ const TodoList: React.FC = () => {
     );
 };
 
-export default TodoList;
+export default Board;

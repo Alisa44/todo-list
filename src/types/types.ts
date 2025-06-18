@@ -23,3 +23,5 @@ export interface ITaskColumn extends IBaseColumn{
     onSelectAll: () => void;
     children?: ReactNode;
 }
+
+export type TSortValue = 'all' | 'completed' | 'active'
