@@ -34,8 +34,11 @@
 
 .taskCard.completed {
     background: #e2fbe2;
-    text-decoration: line-through;
     color: #4b5563;
+}
+
+.taskCard.completed .taskTitle {
+    text-decoration: line-through;
 }
 
 .selected.dragging {
